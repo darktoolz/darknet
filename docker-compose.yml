@@ -1,0 +1,37 @@
+services:
+  privoxy:
+    image: darktool/privoxy
+    restart: always
+    ports:
+      - 8118:8118
+    depends_on:
+      - i2p
+      - tor
+  tor:
+    image: darktool/tor
+    restart: always
+    ports:
+      - target: 9050
+        published: 9050
+        protocol: tcp
+        mode: host
+    volumes:
+      - /var/lib/tor
+    networks:
+      - default
+      - tor
+  i2p:
+    image: darktool/i2p
+    restart: always
+    ports:
+      - 4444:4444
+      - 4447:4447
+    volumes:
+      - /root/.i2pd
+networks:
+  default:
+    internal: false
+  tor:
+    internal: true
+    name: tor
+    driver: bridge
