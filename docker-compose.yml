@@ -1,14 +1,21 @@
+name: darknet
+
 services:
   privoxy:
     image: darktool/privoxy
+    read_only: true
     restart: always
     ports:
       - 8118:8118
     depends_on:
       - i2p
       - tor
+    sysctls:
+      - net.ipv6.conf.all.disable_ipv6=1
   tor:
     image: darktool/tor
+    container_name: tor
+    read_only: true
     restart: always
     ports:
       - target: 9050
@@ -17,17 +24,32 @@ services:
         mode: host
     volumes:
       - /var/lib/tor
+    tmpfs:
+      - /etc/tor:size=8M,uid=100,gid=65533,mode=1700
     networks:
       - default
       - tor
+    sysctls:
+      - net.ipv6.conf.all.disable_ipv6=1
+    environment:
+      HTTP_PROXY: ""
+      http_proxy: ""
+      HTTPS_PROXY: ""
+      https_proxy: ""
+      BRIDGES: ${BRIDGES}
   i2p:
     image: darktool/i2p
+    read_only: true
     restart: always
     ports:
       - 4444:4444
       - 4447:4447
     volumes:
       - /root/.i2pd
+    environment:
+      BANDWIDTH: P
+    sysctls:
+      - net.ipv6.conf.all.disable_ipv6=1
 networks:
   default:
     internal: false
