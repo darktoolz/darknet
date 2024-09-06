@@ -50,6 +50,11 @@ services:
       BANDWIDTH: P
     sysctls:
       - net.ipv6.conf.all.disable_ipv6=1
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 20000
+        hard: 40000
 networks:
   default:
     internal: false
